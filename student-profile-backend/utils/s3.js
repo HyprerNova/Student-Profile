@@ -1,7 +1,8 @@
-import { S3, SNS } from 'aws-sdk';
+import AWS from 'aws-sdk';
 import { v4 as uuidv4 } from 'uuid';
-import dotenv from 'dotenv';
-dotenv.config();
+import 'dotenv/config';
+
+const { S3, SNS } = AWS;
 
 const s3 = new S3({ region: process.env.AWS_REGION });
 const sns = new SNS({ region: process.env.AWS_REGION });

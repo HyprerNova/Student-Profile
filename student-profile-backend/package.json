@@ -4,7 +4,13 @@
   "description": "",
   "main": "serves.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "node serves.js",
+    "dev": "nodemon serves.js",
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "lint": "eslint \"{.,routes,utils}/**/*.js\"",
+    "lint:fix": "eslint \"{.,routes,utils}/**/*.js\" --fix",
+    "format": "prettier --write \"{.,routes,utils}/**/*.{js,json,md}\"",
+    "pre-commit": "npm run lint:fix && npm run format && git add ."
   },
   "keywords": [],
   "author": "",
@@ -23,6 +29,10 @@
     "uuid": "^13.0.0"
   },
   "devDependencies": {
-    "nodemon": "^3.1.11"
+    "eslint": "^8.57.1",
+    "eslint-config-prettier": "^10.1.8",
+    "eslint-plugin-prettier": "^5.5.4",
+    "nodemon": "^3.1.11",
+    "prettier": "^3.7.4"
   }
 }

@@ -28,7 +28,7 @@ const authenticate = async (req, res, next) => {
 router.get('/', authenticate, async (req, res) => {
   const result = await pool.query('SELECT name, email FROM users WHERE id = $1', [req.userId]);
   const profilePicUrl = await generatePresignedGetUrl(PIC_BUCKET, `${req.userId}/current/profile.jpg`);
-  res.json({ ...result.rows[0], profilePictureUrl });
+  res.json({ ...result.rows[0], profilePictureUrl: profilePicUrl });
 });
 
 router.post('/picture', authenticate, async (req, res) => {

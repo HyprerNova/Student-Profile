@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Alert } from 'react-bootstrap';
 import axios from 'axios';
+import { API_BASE_URL } from '../../config.js';
 
 const ProfilePictureRestore = ({ onRestoreSuccess }) => {
   const [error, setError] = useState('');
@@ -10,7 +11,7 @@ const ProfilePictureRestore = ({ onRestoreSuccess }) => {
     try {
       const token = localStorage.getItem('token');
       const config = { headers: { Authorization: `Bearer ${token}` } };
-      await axios.post('http://localhost:3000/profile/picture/restore', {}, config);
+      await axios.post(`${API_BASE_URL}/profile/picture/restore`, {}, config);
       setSuccess('Old profile picture restored');
       onRestoreSuccess();
     } catch (err) {

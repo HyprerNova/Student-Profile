@@ -1,8 +1,9 @@
 import React, { useState, useContext } from 'react';
-import { Form, Button, Alert, Container } from 'react-bootstrap';
+import { Form, Button, Alert, Container, Card } from 'react-bootstrap';
 import axios from 'axios';
 import { AuthContext } from '../../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from '../../config.js';
 
 const Login = () => {
   const [email, setEmail] = useState('');
@@ -13,8 +14,10 @@ const Login = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+
     try {
-      const res = await axios.post('http://localhost:3000/auth/signin', { email, password });
+      const res = await axios.post(`${API_BASE_URL}/auth/signin`, { email, password });
       login(res.data.token, res.data.user);
       navigate('/profile');
     } catch (err) {
@@ -23,20 +26,52 @@ const Login = () => {
   };
 
   return (
-    <Container className="mt-5">
-      <h2>Login</h2>
-      {error && <Alert variant="danger">{error}</Alert>}
-      <Form onSubmit={handleSubmit}>
-        <Form.Group controlId="email">
-          <Form.Label>Email</Form.Label>
-          <Form.Control type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-        </Form.Group>
-        <Form.Group controlId="password">
-          <Form.Label>Password</Form.Label>
-          <Form.Control type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-        </Form.Group>
-        <Button variant="primary" type="submit" className="mt-3">Login</Button>
-      </Form>
+    <Container className="app-main">
+      <div className="row justify-content-center">
+        <div className="col-md-8 col-lg-5">
+          <Card className="shadow-soft">
+            <Card.Body className="p-4 p-md-5">
+              <div className="mb-4">
+                <h2 className="h3 fw-semibold page-title mb-1">Welcome back</h2>
+                <div className="text-muted-2">Log in to manage your profile.</div>
+              </div>
+
+              {error && <Alert variant="danger">{error}</Alert>}
+
+              <Form onSubmit={handleSubmit}>
+                <Form.Group controlId="email" className="mb-3">
+                  <Form.Label>Email</Form.Label>
+                  <Form.Control
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="you@example.com"
+                    required
+                  />
+                </Form.Group>
+                <Form.Group controlId="password" className="mb-3">
+                  <Form.Label>Password</Form.Label>
+                  <Form.Control
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="••••••••"
+                    required
+                  />
+                </Form.Group>
+
+                <Button variant="primary" type="submit" className="w-100" size="lg">
+                  Login
+                </Button>
+              </Form>
+
+              <div className="text-center text-muted-2 mt-3">
+                New here? <Link to="/signup">Create an account</Link>
+              </div>
+            </Card.Body>
+          </Card>
+        </div>
+      </div>
     </Container>
   );
 };

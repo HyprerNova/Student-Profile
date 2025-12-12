@@ -1,22 +1,21 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { Container, Row, Col, Image, Button, Alert } from 'react-bootstrap';
+import React, { useState, useEffect } from 'react';
+import { Container, Row, Col, Image, Alert, Card, Badge, Button } from 'react-bootstrap';
 import axios from 'axios';
-import { AuthContext } from '../../context/AuthContext';
 import ProfilePictureUpload from './ProfilePictureUpload';
 import ProfilePictureRestore from './ProfilePictureRestore';
 import MarksCardUpload from './MarksCardUpload';
+import { API_BASE_URL } from '../../config.js';
 
 const Profile = () => {
   const [profile, setProfile] = useState(null);
   const [marksCards, setMarksCards] = useState({ tenth: null, twelfth: null });
   const [error, setError] = useState('');
-  const { user } = useContext(AuthContext);
 
   const fetchProfile = async () => {
     try {
       const token = localStorage.getItem('token');
       const config = { headers: { Authorization: `Bearer ${token}` } };
-      const res = await axios.get('http://localhost:3000/profile', config);
+      const res = await axios.get(`${API_BASE_URL}/profile`, config);
       setProfile(res.data);
     } catch (err) {
       setError('Failed to fetch profile');
@@ -27,8 +26,8 @@ const Profile = () => {
     try {
       const token = localStorage.getItem('token');
       const config = { headers: { Authorization: `Bearer ${token}` } };
-      const res = await axios.get('http://localhost:3000/profile/markscard', config);
-      setMarksCards({ tenth: res.data.tenthUrl, twelfth: res.data.twelfthUrl });  // Assuming pre-signed URLs
+      const res = await axios.get(`${API_BASE_URL}/profile/markscard`, config);
+      setMarksCards({ tenth: res.data.tenthUrl, twelfth: res.data.twelfthUrl });
     } catch (err) {
       setError('Failed to fetch marks cards');
     }
@@ -39,26 +38,131 @@ const Profile = () => {
     fetchMarksCards();
   }, []);
 
-  if (!profile) return <p>Loading...</p>;
+  if (!profile) {
+    return (
+      <Container className="app-main">
+        <div className="text-muted-2">Loading profile…</div>
+      </Container>
+    );
+  }
 
   return (
-    <Container className="mt-5">
-      <h2>Profile</h2>
+    <Container className="app-main">
+      <div className="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4">
+        <div>
+          <h2 className="h3 fw-semibold page-title mb-1">Your Profile</h2>
+          <div className="text-muted-2">Manage your details and uploads.</div>
+        </div>
+        <Badge bg="light" text="dark" className="border">
+          Signed in as <span className="fw-semibold">{profile.email}</span>
+        </Badge>
+      </div>
+
       {error && <Alert variant="danger">{error}</Alert>}
-      <Row>
-        <Col md={4}>
-          <Image src={profile.profilePictureUrl} rounded fluid />  // Pre-signed URL from backend
-          <ProfilePictureUpload onUploadSuccess={fetchProfile} />
-          <ProfilePictureRestore onRestoreSuccess={fetchProfile} />
+
+      <Row className="g-4">
+        <Col lg={4}>
+          <Card className="shadow-soft">
+            <Card.Body className="p-4">
+              <div className="text-center">
+                <Image
+                  src={profile.profilePictureUrl}
+                  alt="Profile"
+                  className="profile-avatar"
+                />
+                <div className="mt-3">
+                  <div className="fw-semibold fs-5">{profile.name}</div>
+                  <div className="text-muted-2">{profile.email}</div>
+                </div>
+              </div>
+
+              <div className="mt-4">
+                <ProfilePictureUpload onUploadSuccess={fetchProfile} />
+                <ProfilePictureRestore onRestoreSuccess={fetchProfile} />
+              </div>
+            </Card.Body>
+          </Card>
         </Col>
-        <Col md={8}>
-          <p><strong>Name:</strong> {profile.name}</p>
-          <p><strong>Email:</strong> {profile.email}</p>
-          <h4>Marks Cards</h4>
-          <p>10th Grade: {marksCards.tenth ? <a href={marksCards.tenth}>View</a> : 'Not uploaded'}</p>
-          <p>12th Grade: {marksCards.twelfth ? <a href={marksCards.twelfth}>View</a> : 'Not uploaded'}</p>
-          <MarksCardUpload grade="10th" onUploadSuccess={fetchMarksCards} />
-          <MarksCardUpload grade="12th" onUploadSuccess={fetchMarksCards} />
+
+        <Col lg={8}>
+          <Card className="shadow-soft">
+            <Card.Body className="p-4 p-md-5">
+              <div className="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
+                <div>
+                  <h3 className="h5 fw-semibold mb-1">Marks Cards</h3>
+                  <div className="text-muted-2">Upload PDFs or images. Use the links to view.</div>
+                </div>
+              </div>
+
+              <Row className="g-3 mb-3">
+                <Col md={6}>
+                  <Card className="h-100">
+                    <Card.Body>
+                      <div className="d-flex align-items-center justify-content-between">
+                        <div className="fw-semibold">10th Grade</div>
+                        {marksCards.tenth ? (
+                          <Badge bg="success">Uploaded</Badge>
+                        ) : (
+                          <Badge bg="secondary">Missing</Badge>
+                        )}
+                      </div>
+                      <div className="mt-3 d-flex gap-2 flex-wrap">
+                        <Button
+                          variant={marksCards.tenth ? 'outline-primary' : 'outline-secondary'}
+                          size="sm"
+                          as="a"
+                          href={marksCards.tenth || undefined}
+                          target="_blank"
+                          rel="noreferrer"
+                          disabled={!marksCards.tenth}
+                        >
+                          View
+                        </Button>
+                      </div>
+                    </Card.Body>
+                  </Card>
+                </Col>
+                <Col md={6}>
+                  <Card className="h-100">
+                    <Card.Body>
+                      <div className="d-flex align-items-center justify-content-between">
+                        <div className="fw-semibold">12th Grade</div>
+                        {marksCards.twelfth ? (
+                          <Badge bg="success">Uploaded</Badge>
+                        ) : (
+                          <Badge bg="secondary">Missing</Badge>
+                        )}
+                      </div>
+                      <div className="mt-3 d-flex gap-2 flex-wrap">
+                        <Button
+                          variant={marksCards.twelfth ? 'outline-primary' : 'outline-secondary'}
+                          size="sm"
+                          as="a"
+                          href={marksCards.twelfth || undefined}
+                          target="_blank"
+                          rel="noreferrer"
+                          disabled={!marksCards.twelfth}
+                        >
+                          View
+                        </Button>
+                      </div>
+                    </Card.Body>
+                  </Card>
+                </Col>
+              </Row>
+
+              <div className="border-top pt-3">
+                <Row className="g-3">
+                  <Col md={6}>
+                    <MarksCardUpload grade="10th" onUploadSuccess={fetchMarksCards} />
+                  </Col>
+                  <Col md={6}>
+                    <MarksCardUpload grade="12th" onUploadSuccess={fetchMarksCards} />
+                  </Col>
+                </Row>
+              </div>
+            </Card.Body>
+          </Card>
         </Col>
       </Row>
     </Container>

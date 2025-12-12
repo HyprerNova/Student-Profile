@@ -1,8 +1,9 @@
 import React, { useState, useContext } from 'react';
-import { Form, Button, Alert, Container } from 'react-bootstrap';
+import { Form, Button, Alert, Container, Card } from 'react-bootstrap';
 import axios from 'axios';
 import { AuthContext } from '../../context/AuthContext';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
+import { API_BASE_URL } from '../../config.js';
 
 const Signup = () => {
   const [email, setEmail] = useState('');
@@ -14,8 +15,14 @@ const Signup = () => {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError('');
+
     try {
-      const res = await axios.post('http://localhost:3000/auth/signup', { name, email, password });
+      const res = await axios.post(`${API_BASE_URL}/auth/signup`, {
+        name: name.trim(),
+        email: email.trim(),
+        password,
+      });
       login(res.data.token, res.data.user);
       navigate('/profile');
     } catch (err) {
@@ -24,24 +31,62 @@ const Signup = () => {
   };
 
   return (
-    <Container className="mt-5">
-      <h2>Signup</h2>
-      {error && <Alert variant="danger">{error}</Alert>}
-      <Form onSubmit={handleSubmit}>
-        <Form.Group controlId="name">
-          <Form.Label>Name</Form.Label>
-          <Form.Control type="text" value={name} onChange={(e) => setName(e.target.value)} required />
-        </Form.Group>
-        <Form.Group controlId="email">
-          <Form.Label>Email</Form.Label>
-          <Form.Control type="email" value={email} onChange={(e) => setEmail(e.target.value)} required />
-        </Form.Group>
-        <Form.Group controlId="password">
-          <Form.Label>Password</Form.Label>
-          <Form.Control type="password" value={password} onChange={(e) => setPassword(e.target.value)} required />
-        </Form.Group>
-        <Button variant="primary" type="submit" className="mt-3">Signup</Button>
-      </Form>
+    <Container className="app-main">
+      <div className="row justify-content-center">
+        <div className="col-md-8 col-lg-5">
+          <Card className="shadow-soft">
+            <Card.Body className="p-4 p-md-5">
+              <div className="mb-4">
+                <h2 className="h3 fw-semibold page-title mb-1">Create your account</h2>
+                <div className="text-muted-2">It only takes a minute.</div>
+              </div>
+
+              {error && <Alert variant="danger">{error}</Alert>}
+
+              <Form onSubmit={handleSubmit}>
+                <Form.Group controlId="name" className="mb-3">
+                  <Form.Label>Name</Form.Label>
+                  <Form.Control
+                    type="text"
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    placeholder="Your name"
+                    required
+                  />
+                </Form.Group>
+                <Form.Group controlId="email" className="mb-3">
+                  <Form.Label>Email</Form.Label>
+                  <Form.Control
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="you@example.com"
+                    required
+                  />
+                </Form.Group>
+                <Form.Group controlId="password" className="mb-3">
+                  <Form.Label>Password</Form.Label>
+                  <Form.Control
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    placeholder="Create a password"
+                    required
+                  />
+                </Form.Group>
+
+                <Button variant="primary" type="submit" className="w-100" size="lg">
+                  Signup
+                </Button>
+              </Form>
+
+              <div className="text-center text-muted-2 mt-3">
+                Already have an account? <Link to="/login">Log in</Link>
+              </div>
+            </Card.Body>
+          </Card>
+        </div>
+      </div>
     </Container>
   );
 };

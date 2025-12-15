@@ -31,6 +31,23 @@ const Profile = () => {
     }
   };
 
+  const handleDeleteAccount = async () => {
+    try {
+      const token = localStorage.getItem('token');
+      await axios.delete(`${API_BASE_URL}/profile`, {
+        headers: { Authorization: `Bearer ${token}` },
+      });
+      localStorage.removeItem('token');
+      alert('Your account has been permanently deleted.');
+      window.location.href = '/'; // redirect to home/login
+    } catch (err) {
+      alert(
+        'Failed to delete account: ' +
+          (err.response?.data?.message || 'Unknown error')
+      );
+    }
+  };
+
   const fetchMarksCards = async () => {
     try {
       const token = localStorage.getItem('token');
@@ -62,13 +79,28 @@ const Profile = () => {
           <h2 className="h3 fw-semibold page-title mb-1">Your Profile</h2>
           <div className="text-muted-2">Manage your details and uploads.</div>
         </div>
-        <Badge bg="light" text="dark" className="border">
-          Signed in as <span className="fw-semibold">{profile.email}</span>
-        </Badge>
+        <div className="d-flex align-items-center gap-2 flex-wrap">
+          <Badge bg="light" text="dark" className="border">
+            Signed in as <span className="fw-semibold">{profile.email}</span>
+          </Badge>
+          <Button
+            variant="danger"
+            size="sm"
+            onClick={() => {
+              if (
+                window.confirm(
+                  'Delete your account? This permanently removes all data including S3 files.'
+                )
+              ) {
+                handleDeleteAccount();
+              }
+            }}
+          >
+            Delete Account
+          </Button>
+        </div>
       </div>
-
       {error && <Alert variant="danger">{error}</Alert>}
-
       <Row className="g-4">
         <Col lg={4}>
           <Card className="shadow-soft">

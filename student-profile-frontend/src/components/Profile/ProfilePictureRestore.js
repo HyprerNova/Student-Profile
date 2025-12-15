@@ -15,15 +15,28 @@ const ProfilePictureRestore = ({ onRestoreSuccess }) => {
       setSuccess('Old profile picture restored');
       onRestoreSuccess();
     } catch (err) {
-      setError(err.response?.data?.message || 'Restore failed (e.g., no old picture or expired)');
+      setError(
+        err.response?.data?.message ||
+          'Restore failed (e.g., no old picture or expired)'
+      );
     }
   };
 
   return (
     <div className="mt-3">
-      <Button variant="secondary" onClick={handleRestore}>Restore Old Picture</Button>
-      {error && <Alert variant="danger" className="mt-2">{error}</Alert>}
-      {success && <Alert variant="success" className="mt-2">{success}</Alert>}
+      <Button variant="secondary" onClick={handleRestore}>
+        Restore Old Picture
+      </Button>
+      {error && (
+        <Alert variant="danger" className="mt-2">
+          {error}
+        </Alert>
+      )}
+      {success && (
+        <Alert variant="success" className="mt-2">
+          {success}
+        </Alert>
+      )}
     </div>
   );
 };

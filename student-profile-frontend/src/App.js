@@ -13,15 +13,23 @@ function Home() {
       <div className="p-4 p-md-5 bg-white rounded-4 border shadow-soft">
         <div className="row align-items-center g-4">
           <div className="col-lg-7">
-            <h1 className="display-6 fw-semibold page-title mb-2">Student Profile Management</h1>
+            <h1 className="display-6 fw-semibold page-title mb-2">
+              Student Profile Management
+            </h1>
             <p className="text-muted-2 fs-5 mb-4">
-              Securely manage your profile, upload your picture, and store marks cards — all in one place.
+              Securely manage your profile, upload your picture, and store marks
+              cards — all in one place.
             </p>
             <div className="d-flex flex-wrap gap-2">
               <Button as={Link} to="/login" variant="primary" size="lg">
                 Log in
               </Button>
-              <Button as={Link} to="/signup" variant="outline-primary" size="lg">
+              <Button
+                as={Link}
+                to="/signup"
+                variant="outline-primary"
+                size="lg"
+              >
                 Create account
               </Button>
             </div>
@@ -32,7 +40,9 @@ function Home() {
                 <div className="brand-badge" />
                 <div>
                   <div className="fw-semibold">Quick actions</div>
-                  <div className="text-muted-2 small">Profile • Picture • Marks cards</div>
+                  <div className="text-muted-2 small">
+                    Profile • Picture • Marks cards
+                  </div>
                 </div>
               </div>
               <ul className="mb-0 text-muted-2">

@@ -15,8 +15,9 @@
   --app-brand-strong: #4338ca;
 
   /* Bootstrap theme hooks */
-  --bs-body-font-family: ui-sans-serif, system-ui, -apple-system, "Segoe UI", Roboto,
-    "Helvetica Neue", Arial, "Noto Sans", "Liberation Sans", sans-serif;
+  --bs-body-font-family:
+    ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto,
+    'Helvetica Neue', Arial, 'Noto Sans', 'Liberation Sans', sans-serif;
   --bs-body-color: var(--app-text);
   --bs-primary: var(--app-brand);
   --bs-primary-rgb: 79, 70, 229;
@@ -36,7 +37,11 @@ body {
   -moz-osx-font-smoothing: grayscale;
   background:
     radial-gradient(900px circle at 15% 10%, var(--app-bg-1), transparent 55%),
-    radial-gradient(800px circle at 85% 0%, rgba(79, 70, 229, 0.18), transparent 40%),
+    radial-gradient(
+      800px circle at 85% 0%,
+      rgba(79, 70, 229, 0.18),
+      transparent 40%
+    ),
     linear-gradient(180deg, var(--app-bg-0), #ffffff 70%);
 }
 
@@ -63,7 +68,11 @@ a {
 }
 
 .btn-primary {
-  background: linear-gradient(180deg, var(--app-brand), var(--app-brand-strong));
+  background: linear-gradient(
+    180deg,
+    var(--app-brand),
+    var(--app-brand-strong)
+  );
   border-color: var(--app-brand-strong);
 }
 
@@ -82,7 +91,11 @@ a {
   width: 36px;
   height: 36px;
   border-radius: 12px;
-  background: linear-gradient(180deg, var(--app-brand), var(--app-brand-strong));
+  background: linear-gradient(
+    180deg,
+    var(--app-brand),
+    var(--app-brand-strong)
+  );
   box-shadow: 0 8px 24px rgba(79, 70, 229, 0.25);
 }
 
@@ -107,6 +120,7 @@ a {
 }
 
 code {
-  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono",
-    "Courier New", monospace;
+  font-family:
+    ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, 'Liberation Mono',
+    'Courier New', monospace;
 }

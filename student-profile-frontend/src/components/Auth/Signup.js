@@ -37,7 +37,9 @@ const Signup = () => {
           <Card className="shadow-soft">
             <Card.Body className="p-4 p-md-5">
               <div className="mb-4">
-                <h2 className="h3 fw-semibold page-title mb-1">Create your account</h2>
+                <h2 className="h3 fw-semibold page-title mb-1">
+                  Create your account
+                </h2>
                 <div className="text-muted-2">It only takes a minute.</div>
               </div>
 
@@ -75,7 +77,12 @@ const Signup = () => {
                   />
                 </Form.Group>
 
-                <Button variant="primary" type="submit" className="w-100" size="lg">
+                <Button
+                  variant="primary"
+                  type="submit"
+                  className="w-100"
+                  size="lg"
+                >
                   Signup
                 </Button>
               </Form>

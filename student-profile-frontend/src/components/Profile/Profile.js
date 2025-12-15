@@ -1,5 +1,14 @@
 import React, { useState, useEffect } from 'react';
-import { Container, Row, Col, Image, Alert, Card, Badge, Button } from 'react-bootstrap';
+import {
+  Container,
+  Row,
+  Col,
+  Image,
+  Alert,
+  Card,
+  Badge,
+  Button,
+} from 'react-bootstrap';
 import axios from 'axios';
 import ProfilePictureUpload from './ProfilePictureUpload';
 import ProfilePictureRestore from './ProfilePictureRestore';
@@ -8,7 +17,7 @@ import { API_BASE_URL } from '../../config.js';
 
 const Profile = () => {
   const [profile, setProfile] = useState(null);
-  const [marksCards, setMarksCards] = useState({ tenth: null, twelfth: null });
+  const [marksCards, setMarksCards] = useState({ tenth: null });
   const [error, setError] = useState('');
 
   const fetchProfile = async () => {
@@ -27,7 +36,7 @@ const Profile = () => {
       const token = localStorage.getItem('token');
       const config = { headers: { Authorization: `Bearer ${token}` } };
       const res = await axios.get(`${API_BASE_URL}/profile/markscard`, config);
-      setMarksCards({ tenth: res.data.tenthUrl, twelfth: res.data.twelfthUrl });
+      setMarksCards({ tenth: res.data.tenthUrl });
     } catch (err) {
       setError('Failed to fetch marks cards');
     }
@@ -90,7 +99,9 @@ const Profile = () => {
               <div className="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-3">
                 <div>
                   <h3 className="h5 fw-semibold mb-1">Marks Cards</h3>
-                  <div className="text-muted-2">Upload PDFs or images. Use the links to view.</div>
+                  <div className="text-muted-2">
+                    Upload PDFs or images. Use the links to view.
+                  </div>
                 </div>
               </div>
 
@@ -108,7 +119,11 @@ const Profile = () => {
                       </div>
                       <div className="mt-3 d-flex gap-2 flex-wrap">
                         <Button
-                          variant={marksCards.tenth ? 'outline-primary' : 'outline-secondary'}
+                          variant={
+                            marksCards.tenth
+                              ? 'outline-primary'
+                              : 'outline-secondary'
+                          }
                           size="sm"
                           as="a"
                           href={marksCards.tenth || undefined}
@@ -122,42 +137,15 @@ const Profile = () => {
                     </Card.Body>
                   </Card>
                 </Col>
-                <Col md={6}>
-                  <Card className="h-100">
-                    <Card.Body>
-                      <div className="d-flex align-items-center justify-content-between">
-                        <div className="fw-semibold">12th Grade</div>
-                        {marksCards.twelfth ? (
-                          <Badge bg="success">Uploaded</Badge>
-                        ) : (
-                          <Badge bg="secondary">Missing</Badge>
-                        )}
-                      </div>
-                      <div className="mt-3 d-flex gap-2 flex-wrap">
-                        <Button
-                          variant={marksCards.twelfth ? 'outline-primary' : 'outline-secondary'}
-                          size="sm"
-                          as="a"
-                          href={marksCards.twelfth || undefined}
-                          target="_blank"
-                          rel="noreferrer"
-                          disabled={!marksCards.twelfth}
-                        >
-                          View
-                        </Button>
-                      </div>
-                    </Card.Body>
-                  </Card>
-                </Col>
               </Row>
 
               <div className="border-top pt-3">
                 <Row className="g-3">
                   <Col md={6}>
-                    <MarksCardUpload grade="10th" onUploadSuccess={fetchMarksCards} />
-                  </Col>
-                  <Col md={6}>
-                    <MarksCardUpload grade="12th" onUploadSuccess={fetchMarksCards} />
+                    <MarksCardUpload
+                      grade="10th"
+                      onUploadSuccess={fetchMarksCards}
+                    />
                   </Col>
                 </Row>
               </div>

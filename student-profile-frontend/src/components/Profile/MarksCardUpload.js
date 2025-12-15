@@ -5,6 +5,7 @@ import { API_BASE_URL } from '../../config.js';
 
 const MarksCardUpload = ({ grade, onUploadSuccess }) => {
   const [file, setFile] = useState(null);
+  const [uploading, setUploading] = useState(false);
   const [error, setError] = useState('');
   const [success, setSuccess] = useState('');
 
@@ -12,42 +13,56 @@ const MarksCardUpload = ({ grade, onUploadSuccess }) => {
     e.preventDefault();
     setError('');
     setSuccess('');
+    setUploading(true);
 
-    if (!file) return;
-
-    const formData = new FormData();
-    formData.append('markscard', file);
-    formData.append('type', grade);
+    if (!file) {
+      setUploading(false);
+      return;
+    }
 
     try {
       const token = localStorage.getItem('token');
-      const config = {
+
+      const formData = new FormData();
+      formData.append('markscard', file);
+      formData.append('type', grade);
+
+      await axios.post(`${API_BASE_URL}/profile/markscard`, formData, {
         headers: {
           Authorization: `Bearer ${token}`,
           'Content-Type': 'multipart/form-data',
         },
-      };
-      await axios.post(`${API_BASE_URL}/profile/markscard`, formData, config);
-      setSuccess(`${grade} marks card updated`);
+      });
+
+      setSuccess(`${grade} marks card uploaded successfully!`);
       onUploadSuccess();
     } catch (err) {
       setError(err.response?.data?.message || 'Upload failed');
+    } finally {
+      setUploading(false);
     }
   };
 
   return (
     <Form onSubmit={handleSubmit}>
       <Form.Group controlId={`${grade}-markscard`} className="mb-2">
-        <Form.Label className="fw-semibold">Upload {grade} Marks Card</Form.Label>
+        <Form.Label className="fw-semibold">
+          Upload {grade} Marks Card
+        </Form.Label>
         <Form.Control
           type="file"
           onChange={(e) => setFile(e.target.files[0])}
           accept=".pdf,image/*"
+          disabled={uploading}
         />
-        <Form.Text className="text-muted-2">PDF or image (JPG/PNG).</Form.Text>
       </Form.Group>
-      <Button variant="primary" type="submit" className="w-100">
-        Upload
+      <Button
+        variant="primary"
+        type="submit"
+        className="w-100"
+        disabled={uploading}
+      >
+        {uploading ? 'Uploading...' : 'Upload'}
       </Button>
       {error && (
         <Alert variant="danger" className="mt-2 mb-0">

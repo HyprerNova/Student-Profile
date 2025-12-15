@@ -17,7 +17,10 @@ const Login = () => {
     setError('');
 
     try {
-      const res = await axios.post(`${API_BASE_URL}/auth/signin`, { email, password });
+      const res = await axios.post(`${API_BASE_URL}/auth/signin`, {
+        email,
+        password,
+      });
       login(res.data.token, res.data.user);
       navigate('/profile');
     } catch (err) {
@@ -33,7 +36,9 @@ const Login = () => {
             <Card.Body className="p-4 p-md-5">
               <div className="mb-4">
                 <h2 className="h3 fw-semibold page-title mb-1">Welcome back</h2>
-                <div className="text-muted-2">Log in to manage your profile.</div>
+                <div className="text-muted-2">
+                  Log in to manage your profile.
+                </div>
               </div>
 
               {error && <Alert variant="danger">{error}</Alert>}
@@ -60,7 +65,12 @@ const Login = () => {
                   />
                 </Form.Group>
 
-                <Button variant="primary" type="submit" className="w-100" size="lg">
+                <Button
+                  variant="primary"
+                  type="submit"
+                  className="w-100"
+                  size="lg"
+                >
                   Login
                 </Button>
               </Form>

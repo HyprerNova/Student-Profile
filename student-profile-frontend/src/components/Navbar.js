@@ -10,7 +10,11 @@ const AppNavbar = () => {
   return (
     <Navbar expand="lg" className="app-navbar" sticky="top">
       <Container>
-        <Navbar.Brand as={NavLink} to="/" className="d-flex align-items-center gap-2">
+        <Navbar.Brand
+          as={NavLink}
+          to="/"
+          className="d-flex align-items-center gap-2"
+        >
           <span className="brand-badge" aria-hidden="true" />
           <span className="fw-semibold">Student Profile</span>
         </Navbar.Brand>

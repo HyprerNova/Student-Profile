@@ -34,7 +34,7 @@ export const logMarksCardChange = async (userId, type) => {
   const year = today.getFullYear();
   const month = String(today.getMonth() + 1).padStart(2, '0');
   const day = String(today.getDate()).padStart(2, '0');
-  
+
   const partition = `markscard_changes/year=${year}/month=${month}/day=${day}`;
   const key = `${partition}/event_${uuidv4()}.json`;
 
@@ -44,18 +44,22 @@ export const logMarksCardChange = async (userId, type) => {
     timestamp: new Date().toISOString(),
   };
 
-  await s3.putObject({
-    Bucket: LOG_BUCKET,
-    Key: key,
-    Body: JSON.stringify(logEntry),
-    ContentType: 'application/json',
-  }).promise();
+  await s3
+    .putObject({
+      Bucket: LOG_BUCKET,
+      Key: key,
+      Body: JSON.stringify(logEntry),
+      ContentType: 'application/json',
+    })
+    .promise();
 
-  await sns.publish({
-    TopicArn: SNS_TOPIC_ARN,
-    Message: JSON.stringify(logEntry),
-    Subject: 'Marks Card Updated',
-  }).promise();
+  await sns
+    .publish({
+      TopicArn: SNS_TOPIC_ARN,
+      Message: JSON.stringify(logEntry),
+      Subject: 'Marks Card Updated',
+    })
+    .promise();
 };
 
 export { s3, PIC_BUCKET, MARKS_BUCKET, LOG_BUCKET };

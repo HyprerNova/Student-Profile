@@ -104,4 +104,11 @@ router.post('/signin', async (req, res) => {
   }
 });
 
+// ================= LOGOUT (stateless) =================
+// For JWT-based stateless auth, logout is handled client-side by discarding the token.
+// This endpoint simply responds OK; clients should remove the token locally.
+router.post('/logout', (req, res) => {
+  res.json({ message: 'Logged out (client should discard token)' });
+});
+
 export default router;

@@ -28,6 +28,7 @@ const authenticate = async (req, res, next) => {
   }
 };
 
+// To display the profile basic information and profile picture
 router.get('/', authenticate, async (req, res) => {
   const result = await pool.query(
     'SELECT name, email, profile_pic_key FROM users WHERE id = $1',
@@ -38,11 +39,13 @@ router.get('/', authenticate, async (req, res) => {
   let profilePictureUrl = null;
   if (user.profile_pic_key) {
     profilePictureUrl = `https://${PIC_BUCKET}.s3.amazonaws.com/${user.profile_pic_key}`;
+    console.log(profilePictureUrl);
   }
 
   res.json({ ...user, profilePictureUrl });
 });
 
+// For uploading the profile picture
 router.post(
   '/picture',
   authenticate,
@@ -70,7 +73,15 @@ router.post(
         req.userId,
       ]);
 
-      res.json({ message: 'Profile picture uploaded and saved successfully' });
+      console.log('Profile picture uploaded and saved successfully');
+      console.log('Key:', key);
+      console.log('URL:', `https://${PIC_BUCKET}.s3.amazonaws.com/${key}`);
+      // Save key to RDS
+      res.json({
+        message: 'Profile picture uploaded and saved successfully',
+        key,
+        url: `https://${PIC_BUCKET}.s3.amazonaws.com/${key}`,
+      });
     } catch (err) {
       console.error('Upload error:', err);
       res.status(500).json({ message: 'Upload failed' });
@@ -78,26 +89,37 @@ router.post(
   }
 );
 
-router.post('/picture/restore', authenticate, async (req, res) => {
-  const old = await pool.query(
-    'SELECT s3_key FROM old_profile_pics WHERE user_id = $1 ORDER BY uploaded_at DESC LIMIT 1',
-    [req.userId]
-  );
+// Return profile picture key and URL (if exists)
+router.get('/picture', authenticate, async (req, res) => {
+  try {
+    const result = await pool.query(
+      'SELECT profile_pic_key FROM users WHERE id = $1',
+      [req.userId]
+    );
 
-  if (old.rowCount === 0)
-    return res.status(404).json({ message: 'No old picture to restore' });
+    const key = result.rows[0]?.profile_pic_key || null;
 
-  await s3
-    .copyObject({
-      Bucket: PIC_BUCKET,
-      CopySource: `${PIC_BUCKET}/${old.rows[0].s3_key}`,
-      Key: `${req.userId}/current/profile.jpg`,
-    })
-    .promise();
+    console.log('Key:', key);
+    console.log('URL:', `https://${PIC_BUCKET}.s3.amazonaws.com/${key}`);
+    if (!key) {
+      return res
+        .status(404)
+        .json({ message: 'No profile picture found', key: null, url: null });
+    }
 
-  res.json({ message: 'Old profile picture restored successfully' });
+    const url = `https://${PIC_BUCKET}.s3.amazonaws.com/${key}`;
+    res.json({ key, url });
+  } catch (err) {
+    console.error('Error fetching profile picture key:', err);
+    res.status(500).json({
+      message: err.message || 'Internal server error',
+      key: null,
+      url: null,
+    });
+  }
 });
 
+// For uploading the marks card
 router.post(
   '/markscard',
   authenticate,
@@ -140,6 +162,7 @@ router.post(
   }
 );
 
+// For viewing the marks card
 router.get('/markscard', authenticate, async (req, res) => {
   const result = await pool.query(
     'SELECT marks_card_key FROM users WHERE id = $1',
@@ -153,6 +176,7 @@ router.get('/markscard', authenticate, async (req, res) => {
   res.json({ tenthUrl: marksCardUrl });
 });
 
+// For deleting the account
 router.delete('/', authenticate, async (req, res) => {
   try {
     // 1. Get user's S3 keys from RDS

@@ -11,7 +11,6 @@ import {
 } from 'react-bootstrap';
 import axios from 'axios';
 import ProfilePictureUpload from './ProfilePictureUpload';
-import ProfilePictureRestore from './ProfilePictureRestore';
 import MarksCardUpload from './MarksCardUpload';
 import { API_BASE_URL } from '../../config.js';
 
@@ -126,7 +125,6 @@ const Profile = () => {
 
               <div className="mt-4">
                 <ProfilePictureUpload onUploadSuccess={fetchProfile} />
-                <ProfilePictureRestore onRestoreSuccess={fetchProfile} />
               </div>
             </Card.Body>
           </Card>

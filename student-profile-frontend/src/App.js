@@ -1,13 +1,14 @@
-import React from 'react';
+import React, { useContext } from 'react';
 import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
 import { Container, Button } from 'react-bootstrap';
-import { AuthProvider } from './context/AuthContext';
+import { AuthProvider, AuthContext } from './context/AuthContext';
 import AppNavbar from './components/Navbar';
 import Login from './components/Auth/Login';
 import Signup from './components/Auth/Signup';
 import Profile from './components/Profile/Profile';
+import Dashboard from './components/Dashboard/Dashboard';
 
-function Home() {
+function LandingHome() {
   return (
     <Container className="app-main">
       <div className="p-4 p-md-5 bg-white rounded-4 border shadow-soft">
@@ -58,6 +59,11 @@ function Home() {
   );
 }
 
+function HomeRoute() {
+  const { isAuthenticated } = useContext(AuthContext);
+  return isAuthenticated ? <Dashboard /> : <LandingHome />;
+}
+
 function App() {
   return (
     <AuthProvider>
@@ -66,8 +72,10 @@ function App() {
         <Routes>
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
+          {/* Settings page for updating profile pic + marks card */}
           <Route path="/profile" element={<Profile />} />
-          <Route path="/" element={<Home />} />
+          {/* Home page after login: show details + marks card only */}
+          <Route path="/" element={<HomeRoute />} />
         </Routes>
       </Router>
     </AuthProvider>

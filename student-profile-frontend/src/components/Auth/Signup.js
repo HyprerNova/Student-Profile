@@ -24,7 +24,7 @@ const Signup = () => {
         password,
       });
       login(res.data.token, res.data.user);
-      navigate('/profile');
+      navigate('/');
     } catch (err) {
       setError(err.response?.data?.message || 'Signup failed');
     }

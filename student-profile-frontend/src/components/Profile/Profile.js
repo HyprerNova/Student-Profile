@@ -25,6 +25,8 @@ const Profile = () => {
       const token = localStorage.getItem('token');
       const config = { headers: { Authorization: `Bearer ${token}` } };
       const res = await axios.get(`${API_BASE_URL}/profile`, config);
+      console.log('Profile:', res.data);
+      console.log('Profile URL:', res.data.profilePictureUrl);
       setProfile(res.data);
     } catch (err) {
       setError('Failed to fetch profile');
@@ -37,9 +39,10 @@ const Profile = () => {
       await axios.delete(`${API_BASE_URL}/profile`, {
         headers: { Authorization: `Bearer ${token}` },
       });
+
       localStorage.removeItem('token');
       alert('Your account has been permanently deleted.');
-      window.location.href = '/'; // redirect to home/login
+      window.location.href = '/';
     } catch (err) {
       alert(
         'Failed to delete account: ' +
@@ -53,6 +56,8 @@ const Profile = () => {
       const token = localStorage.getItem('token');
       const config = { headers: { Authorization: `Bearer ${token}` } };
       const res = await axios.get(`${API_BASE_URL}/profile/markscard`, config);
+      console.log('Marks cards:', res.data);
+      console.log('10th URL:', res.data.tenthUrl);
       setMarksCards({ tenth: res.data.tenthUrl });
     } catch (err) {
       setError('Failed to fetch marks cards');
@@ -76,8 +81,10 @@ const Profile = () => {
     <Container className="app-main">
       <div className="d-flex align-items-center justify-content-between flex-wrap gap-2 mb-4">
         <div>
-          <h2 className="h3 fw-semibold page-title mb-1">Your Profile</h2>
-          <div className="text-muted-2">Manage your details and uploads.</div>
+          <h2 className="h3 fw-semibold page-title mb-1">Profile Settings</h2>
+          <div className="text-muted-2">
+            Change your profile picture and marks card.
+          </div>
         </div>
         <div className="d-flex align-items-center gap-2 flex-wrap">
           <Badge bg="light" text="dark" className="border">

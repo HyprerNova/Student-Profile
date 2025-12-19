@@ -221,27 +221,10 @@ router.delete('/', authenticate, async (req, res) => {
       );
     }
 
-    // Delete old archived profile pictures from PIC_BUCKET
-    const oldPics = await pool.query(
-      'SELECT s3_key FROM old_profile_pics WHERE user_id = $1',
-      [req.userId]
-    );
-    if (oldPics.rowCount > 0) {
-      const oldKeys = oldPics.rows.map((row) => ({ Key: row.s3_key }));
-      deletePromises.push(
-        s3
-          .deleteObjects({
-            Bucket: PIC_BUCKET,
-            Delete: { Objects: oldKeys },
-          })
-          .promise()
-      );
-    }
-
     // 2. Execute all S3 deletions in parallel
     await Promise.all(deletePromises);
 
-    // 3. Delete user from RDS (cascades to old_profile_pics and markscard_changes)
+    // 3. Delete user from RDS (cascades to markscard_changes, if configured)
     await pool.query('DELETE FROM users WHERE id = $1', [req.userId]);
 
     res.json({

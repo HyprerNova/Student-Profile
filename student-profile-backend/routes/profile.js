@@ -148,7 +148,12 @@ router.post(
         req.userId,
       ]);
 
-      await logMarksCardChange(req.userId, '10th');
+      // Best-effort logging: don't fail the upload if logging/SNS has issues
+      try {
+        await logMarksCardChange(req.userId, '10th');
+      } catch (logErr) {
+        console.error('Failed to log marks card change:', logErr);
+      }
 
       res.json({
         message: '10th marks card uploaded successfully',

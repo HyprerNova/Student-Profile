@@ -45,10 +45,10 @@ router.post('/signup', async (req, res) => {
     const password_hash = await bcrypt.hash(password, 10);
 
     const result = await pool.query(
-      `INSERT INTO users (name, email, password_hash, role, is_verified) 
+      `INSERT INTO users (name, email, password_hash, role, status) 
        VALUES ($1, $2, $3, $4, $5) 
-       RETURNING id, name, email, role, is_verified`,
-      [trimmedName, trimmedEmail, password_hash, 'student', false]
+       RETURNING id, name, email, role, status`,
+      [trimmedName, trimmedEmail, password_hash, 'student', 'not verified']
     );
 
     const user = result.rows[0];
@@ -101,7 +101,7 @@ router.post('/signin', async (req, res) => {
         name: user.name,
         email: user.email,
         role: user.role,
-        isVerified: user.is_verified,
+        status: user.status,
       },
     });
   } catch (err) {

@@ -28,10 +28,29 @@ const authenticate = async (req, res, next) => {
   }
 };
 
+// Middleware to prevent admin access to profile routes
+const preventAdmin = async (req, res, next) => {
+  try {
+    const result = await pool.query('SELECT role FROM users WHERE id = $1', [
+      req.userId,
+    ]);
+    const user = result.rows[0];
+
+    if (user && user.role === 'admin') {
+      return res
+        .status(403)
+        .json({ message: 'Admins cannot access profile routes' });
+    }
+    next();
+  } catch (err) {
+    res.status(500).json({ message: 'Error checking user role' });
+  }
+};
+
 // To display the profile basic information and profile picture
-router.get('/', authenticate, async (req, res) => {
+router.get('/', authenticate, preventAdmin, async (req, res) => {
   const result = await pool.query(
-    'SELECT name, email, profile_pic_key, role, is_verified FROM users WHERE id = $1',
+    'SELECT name, email, profile_pic_key, role, status FROM users WHERE id = $1',
     [req.userId]
   );
   const user = result.rows[0];
@@ -46,7 +65,7 @@ router.get('/', authenticate, async (req, res) => {
     name: user.name,
     email: user.email,
     role: user.role,
-    isVerified: user.is_verified,
+    status: user.status,
     profilePictureUrl,
   });
 });
@@ -55,6 +74,7 @@ router.get('/', authenticate, async (req, res) => {
 router.post(
   '/picture',
   authenticate,
+  preventAdmin,
   upload.single('picture'),
   async (req, res) => {
     try {
@@ -96,7 +116,7 @@ router.post(
 );
 
 // Return profile picture key and URL (if exists)
-router.get('/picture', authenticate, async (req, res) => {
+router.get('/picture', authenticate, preventAdmin, async (req, res) => {
   try {
     const result = await pool.query(
       'SELECT profile_pic_key FROM users WHERE id = $1',
@@ -129,6 +149,7 @@ router.get('/picture', authenticate, async (req, res) => {
 router.post(
   '/markscard',
   authenticate,
+  preventAdmin,
   upload.single('markscard'),
   async (req, res) => {
     try {
@@ -174,7 +195,7 @@ router.post(
 );
 
 // For viewing the marks card
-router.get('/markscard', authenticate, async (req, res) => {
+router.get('/markscard', authenticate, preventAdmin, async (req, res) => {
   const result = await pool.query(
     'SELECT marks_card_key FROM users WHERE id = $1',
     [req.userId]
@@ -188,7 +209,7 @@ router.get('/markscard', authenticate, async (req, res) => {
 });
 
 // For deleting the account
-router.delete('/', authenticate, async (req, res) => {
+router.delete('/', authenticate, preventAdmin, async (req, res) => {
   try {
     // 1. Get user's S3 keys from RDS
     const result = await pool.query(

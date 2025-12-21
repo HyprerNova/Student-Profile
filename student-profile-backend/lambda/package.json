@@ -1,0 +1,10 @@
+{
+  "name": "verification-email-handler",
+  "version": "1.0.0",
+  "type": "module",
+  "description": "Lambda function to process SQS messages and send verification emails via SNS",
+  "main": "verification-email-handler.js",
+  "dependencies": {
+    "@aws-sdk/client-sns": "^3.0.0"
+  }
+}

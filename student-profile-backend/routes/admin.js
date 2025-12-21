@@ -2,6 +2,7 @@ import express from 'express';
 import pool from '../db.js';
 import jwt from 'jsonwebtoken';
 import { PIC_BUCKET, MARKS_BUCKET } from '../utils/s3.js';
+import { sendToVerificationQueue } from '../utils/sqs.js';
 
 const router = express.Router();
 
@@ -78,10 +79,33 @@ router.post('/verify/:id', authenticate, requireAdmin, async (req, res) => {
   try {
     const studentId = parseInt(req.params.id);
 
+    // Get student info before updating
+    const studentResult = await pool.query(
+      'SELECT name, email FROM users WHERE id = $1 AND role = $2',
+      [studentId, 'student']
+    );
+
+    if (studentResult.rows.length === 0) {
+      return res.status(404).json({ message: 'Student not found' });
+    }
+
+    const student = studentResult.rows[0];
+
+    // Update student status to verified
     await pool.query(
       'UPDATE users SET status = $1 WHERE id = $2 AND role = $3',
       ['verified', studentId, 'student']
     );
+
+    // Send message to SQS for email notification (async, don't wait)
+    sendToVerificationQueue({
+      studentEmail: student.email,
+      name: student.name,
+      studentId: studentId,
+    }).catch((err) => {
+      console.error('Error sending to SQS (non-blocking):', err);
+      // Don't fail the request if SQS fails
+    });
 
     res.json({ message: 'Student verified successfully' });
   } catch (err) {

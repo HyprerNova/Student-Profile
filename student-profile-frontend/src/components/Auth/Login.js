@@ -22,7 +22,8 @@ const Login = () => {
         password,
       });
       login(res.data.token, res.data.user);
-      navigate('/');
+      // Redirect admin to /admin, others to home
+      navigate(res.data.user.role === 'admin' ? '/admin' : '/');
     } catch (err) {
       setError(err.response?.data?.message || 'Login failed');
     }

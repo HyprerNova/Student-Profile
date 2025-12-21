@@ -1,5 +1,11 @@
 import React, { useContext } from 'react';
-import { BrowserRouter as Router, Routes, Route, Link } from 'react-router-dom';
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Link,
+  Navigate,
+} from 'react-router-dom';
 import { Container, Button } from 'react-bootstrap';
 import { AuthProvider, AuthContext } from './context/AuthContext';
 import AppNavbar from './components/Navbar';
@@ -7,6 +13,7 @@ import Login from './components/Auth/Login';
 import Signup from './components/Auth/Signup';
 import Profile from './components/Profile/Profile';
 import Dashboard from './components/Dashboard/Dashboard';
+import AdminDashboard from './components/Dashboard/AdminDashboard';
 
 function LandingHome() {
   return (
@@ -59,9 +66,46 @@ function LandingHome() {
   );
 }
 
+function ProfileRoute() {
+  const { isAuthenticated, user } = useContext(AuthContext);
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  // Redirect admin away from profile page
+  if (user?.role === 'admin') {
+    return <Navigate to="/admin" replace />;
+  }
+
+  return <Profile />;
+}
+
+function AdminRoute() {
+  const { isAuthenticated, user } = useContext(AuthContext);
+
+  if (!isAuthenticated) {
+    return <Navigate to="/login" replace />;
+  }
+
+  if (user?.role !== 'admin') {
+    return <Navigate to="/" replace />;
+  }
+
+  return <AdminDashboard />;
+}
+
 function HomeRoute() {
-  const { isAuthenticated } = useContext(AuthContext);
-  return isAuthenticated ? <Dashboard /> : <LandingHome />;
+  const { isAuthenticated, user } = useContext(AuthContext);
+
+  if (!isAuthenticated) return <LandingHome />;
+
+  // Redirect admin to /admin
+  if (user?.role === 'admin') {
+    return <Navigate to="/admin" replace />;
+  }
+
+  return <Dashboard />;
 }
 
 function App() {
@@ -73,7 +117,9 @@ function App() {
           <Route path="/login" element={<Login />} />
           <Route path="/signup" element={<Signup />} />
           {/* Settings page for updating profile pic + marks card */}
-          <Route path="/profile" element={<Profile />} />
+          <Route path="/profile" element={<ProfileRoute />} />
+          {/* Admin dashboard */}
+          <Route path="/admin" element={<AdminRoute />} />
           {/* Home page after login: show details + marks card only */}
           <Route path="/" element={<HomeRoute />} />
         </Routes>

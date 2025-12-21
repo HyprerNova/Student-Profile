@@ -10,8 +10,9 @@ import {
   Alert,
 } from 'react-bootstrap';
 import axios from 'axios';
-import { API_BASE_URL } from '../../config';
 import { AuthContext } from '../../context/AuthContext';
+const API_BASE_URL = 'http://13.203.203.10:5000';
+//import API_BASE_URL from '../../config'
 
 const Dashboard = () => {
   const { user, refreshProfile } = useContext(AuthContext);

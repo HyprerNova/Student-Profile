@@ -45,10 +45,10 @@ router.post('/signup', async (req, res) => {
     const password_hash = await bcrypt.hash(password, 10);
 
     const result = await pool.query(
-      `INSERT INTO users (name, email, password_hash) 
-       VALUES ($1, $2, $3) 
-       RETURNING id, name, email`,
-      [trimmedName, trimmedEmail, password_hash]
+      `INSERT INTO users (name, email, password_hash, role, is_verified) 
+       VALUES ($1, $2, $3, $4, $5) 
+       RETURNING id, name, email, role, is_verified`,
+      [trimmedName, trimmedEmail, password_hash, 'student', false]
     );
 
     const user = result.rows[0];
@@ -96,7 +96,13 @@ router.post('/signin', async (req, res) => {
 
     res.json({
       token,
-      user: { id: user.id, name: user.name, email: user.email },
+      user: {
+        id: user.id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+        isVerified: user.is_verified,
+      },
     });
   } catch (err) {
     console.error('Signin error:', err);

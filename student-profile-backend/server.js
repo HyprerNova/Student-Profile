@@ -4,6 +4,7 @@ import cors from 'cors';
 import morgan from 'morgan';
 import authRoutes from './routes/auth.js';
 import profileRoutes from './routes/profile.js';
+import adminRoutes from './routes/admin.js';
 
 const app = express();
 
@@ -25,6 +26,7 @@ app.use(express.json());
 // Routes
 app.use('/auth', authRoutes);
 app.use('/profile', profileRoutes);
+app.use('/admin', adminRoutes);
 
 app.get('/', (req, res) => {
   res.json({ message: 'Student Profile API - Running!' });

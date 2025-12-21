@@ -31,7 +31,7 @@ const authenticate = async (req, res, next) => {
 // To display the profile basic information and profile picture
 router.get('/', authenticate, async (req, res) => {
   const result = await pool.query(
-    'SELECT name, email, profile_pic_key FROM users WHERE id = $1',
+    'SELECT name, email, profile_pic_key, role, is_verified FROM users WHERE id = $1',
     [req.userId]
   );
   const user = result.rows[0];
@@ -42,7 +42,13 @@ router.get('/', authenticate, async (req, res) => {
     console.log(profilePictureUrl);
   }
 
-  res.json({ ...user, profilePictureUrl });
+  res.json({
+    name: user.name,
+    email: user.email,
+    role: user.role,
+    isVerified: user.is_verified,
+    profilePictureUrl,
+  });
 });
 
 // For uploading the profile picture
